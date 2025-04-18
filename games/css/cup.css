@@ -1,0 +1,89 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  text-align: center;
+  background: linear-gradient(135deg, #2e2e2e, #1a1a1a);
+  margin: 0;
+  padding: 20px;
+  color: #fff;
+}
+#form-section, #game-section {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  animation: fadeIn 1s ease-in-out;
+}
+input, button {
+  padding: 10px;
+  margin: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+}
+input {
+  width: 70%;
+}
+button {
+  background: #00ffc3;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button:hover {
+  background: #00ffaa;
+}
+.square {
+  width: 60px;
+  height: 60px;
+  display: inline-block;
+  border: 2px solid #ccc;
+  margin: 5px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 8px;
+}
+.square:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px #fff;
+}
+.locked {
+  border: 2px solid gold;
+}
+.selected {
+  outline: 3px dashed #00ffc3;
+}
+.color-box {
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+  margin: 5px;
+  cursor: pointer;
+  border: 2px solid #333;
+  transition: transform 0.2s ease;
+  border-radius: 50%;
+}
+.color-box:hover {
+  transform: scale(1.2);
+  box-shadow: 0 0 10px #00ffc3;
+}
+#hint, #stats #Result {
+  margin-top: 20px;
+  font-weight: bold;
+  color: #00ffc3;
+  animation: pulse 2s infinite;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}

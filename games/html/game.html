@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kim's Memory Bet Game</title>
+  <link rel="stylesheet" href="../css/game.css" />
+</head>
+<body>
+  <!-- Player Name Form Overlay -->
+  <div id="playerFormOverlay" class="overlay">
+    <div class="form-container">
+      <h2>Welcome to Kim's Memory Game</h2>
+      <form id="playerForm">
+        <label for="playerName">Enter your name:</label>
+        <input type="text" id="playerName" required />
+        <button type="submit">Start Game</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Game Info Section -->
+  <div id="gameInfo" style="display:none">
+    <div>Balance: ₹<span id="balance">1000</span></div>
+    <div>Current Bet: ₹<input type="number" id="bet" value="50" /></div>
+    <div>Required Correct: <span id="required">0</span></div>
+    <div>Correct: <span id="correct">0</span></div>
+    <div>Profit: ₹<span id="profit">0.00</span></div>
+    <button id="newGameBtn">New Game</button>
+  </div>
+
+  <!-- Game Display -->
+  <div id="game-container" style="display:none">
+    
+
+    <h2>Memorize the Rhyming Word</h2>
+    <div id="sequence"></div>
+    <div id="input-section" style="display: none;">
+      <p>Enter the words in order (e.g., sling,ming):</p>
+      <div id="Time" style="display:none; font-weight: bold; margin-top: 10px; color: white;"></div>
+
+      <textarea id="userInput" rows="5" cols="50"></textarea><br>
+      <button id="submitBtn" onclick="submitAnswers()">Submit</button>
+
+    </div>
+    <div id="result-section"></div>
+  </div>
+
+  
+
+
+  <script src="../javascript/game.js"></script>
+</body>
+</html>

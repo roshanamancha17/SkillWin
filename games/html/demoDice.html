@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dice War Game</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #fff; padding: 20px; }
+    input { margin: 5px; }
+    .result { margin-top: 15px; font-size: 18px; }
+  </style>
+</head>
+<body>
+
+<h2>🎲 Dice War - Player vs Player</h2>
+
+<p>Each player rolls a dice 3 times. The player with the higher total wins.</p>
+<p>Each player bets points. Winner gets 96% of the pot, 2% goes to house.</p>
+
+<div>
+  <label>Player 1 Bet: </label><input type="number" id="p1Bet" value="5"><br>
+  <label>Player 2 Bet: </label><input type="number" id="p2Bet" value="5"><br>
+  <button onclick="startGame()">Start Game</button>
+</div>
+
+<div class="result" id="resultBox"></div>
+
+<script>
+  let playerWallets = {
+    player1: 10,
+    player2: 10
+  };
+
+  function rollDice() {
+    return Math.floor(Math.random() * 6) + 1;
+  }
+
+  function startGame() {
+    const p1Bet = parseInt(document.getElementById("p1Bet").value);
+    const p2Bet = parseInt(document.getElementById("p2Bet").value);
+
+    if (playerWallets.player1 < p1Bet || playerWallets.player2 < p2Bet) {
+      document.getElementById("resultBox").innerHTML = "❌ Not enough balance for one of the players.";
+      return;
+    }
+
+    // Deduct bets
+    playerWallets.player1 -= p1Bet;
+    playerWallets.player2 -= p2Bet;
+
+    // Roll dice 3 times each
+    const p1Rolls = [rollDice(), rollDice(), rollDice()];
+    const p2Rolls = [rollDice(), rollDice(), rollDice()];
+    const p1Total = p1Rolls.reduce((a,b) => a+b, 0);
+    const p2Total = p2Rolls.reduce((a,b) => a+b, 0);
+
+    // Pot and house cut
+    const pot = p1Bet + p2Bet;
+    const houseCut = pot * 0.02;
+    const payout = pot - houseCut;
+
+    let resultText = `
+      🎲 Player 1 rolls: ${p1Rolls.join(", ")} (Total: ${p1Total})<br>
+      🎲 Player 2 rolls: ${p2Rolls.join(", ")} (Total: ${p2Total})<br><br>
+    `;
+
+    if (p1Total > p2Total) {
+      playerWallets.player1 += payout;
+      resultText += `✅ Player 1 wins and gets ${payout.toFixed(2)} points!<br>`;
+    } else if (p2Total > p1Total) {
+      playerWallets.player2 += payout;
+      resultText += `✅ Player 2 wins and gets ${payout.toFixed(2)} points!<br>`;
+    } else {
+      // Tie: return bets
+      playerWallets.player1 += p1Bet;
+      playerWallets.player2 += p2Bet;
+      resultText += `🤝 It's a tie! Bets returned to both players.<br>`;
+    }
+
+    resultText += `
+      <br>💰 Wallets:<br>
+      Player 1: ${playerWallets.player1.toFixed(2)}<br>
+      Player 2: ${playerWallets.player2.toFixed(2)}
+    `;
+
+    document.getElementById("resultBox").innerHTML = resultText;
+  }
+</script>
+
+</body>
+</html>

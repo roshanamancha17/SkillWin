@@ -1,0 +1,240 @@
+:root {
+    --primary-color: #646cff;
+    --secondary-color: #535bf2;
+    --background-dark: #242424;
+    --background-light: #ffffff;
+    --text-light: rgba(255, 255, 255, 0.87);
+    --text-dark: #213547;
+  }
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    color: var(--text-light);
+    background-color: var(--background-dark);
+  }
+  
+  #app {
+    width: 100%;
+    min-height: 100vh;
+  }
+  
+  header {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  
+  .points {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+  }
+  
+  .profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .profile-btn:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  section {
+    margin-bottom: 3rem;
+  }
+  
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+  }
+  
+  .games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+  }
+  
+  .game-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text-light);
+  }
+  
+  .game-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .game-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .game-card h3 {
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .category-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .category-card:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  
+  .category-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+  
+  .category-card p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+  
+  /* Game page styles */
+  .game-page {
+    padding: 2rem;
+  }
+  
+  .game-page h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 2rem;
+  }
+  
+  .game-details {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 2rem;
+  }
+  
+  .game-banner {
+    width: 100%;
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+  
+  .game-instructions {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .game-instructions h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+  }
+  
+  .game-instructions h3 {
+    color: var(--text-light);
+    margin: 1.5rem 0 1rem;
+  }
+  
+  .game-instructions ul {
+    list-style-position: inside;
+    margin-bottom: 2rem;
+  }
+  
+  .game-instructions li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .play-btn {
+    display: block;
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .play-btn:hover {
+    background-color: var(--secondary-color);
+  }
+  
+  @media (max-width: 768px) {
+    header {
+      padding: 1rem;
+    }
+  
+    main {
+      padding: 1rem;
+    }
+  
+    .games-grid {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+  
+    .category-grid {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+  
+    .game-details {
+      padding: 1rem;
+    }
+  }

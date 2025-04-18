@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Divisibility Dice Game</title>
+  <link rel="stylesheet" href="../css/dice.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Divisibility Dice Game 🎲</h1>
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <input type="text" id="playerNameInput" placeholder="Enter your name" />
+        <input type="email" id="playerEmailInput" placeholder="Enter your email" />
+        <button onclick="startGame()">Start</button>
+      </div>
+    </div>
+    <p>Name: <span id="playerName"></span></p>
+    <p>Email: <span id="playerEmail"></span></p>
+    <p>Balance: ₹<span id="balance">1000.00</span></p>
+    <label>Choose a number (2-6):
+      <input type="number" id="playerNumber" min="1" max="6" />
+    </label>
+    <label>Bet Amount:
+      <input type="number" id="betAmount" min="1" />
+    </label>
+    <button onclick="rollDice()">Roll Dice</button>
+    <div class="dice" id="dice"></div>
+    <p id="result"></p>
+    <h3>Stats:</h3>
+    <p>Wins: <span id="wins">0</span></p>
+    <p>Losses: <span id="losses">0</span></p>
+    <p>Total Bet: ₹<span id="totalBet">0.00</span></p>
+    <p>Total Won: ₹<span id="totalWon">0.00</span></p>
+  </div>
+  <script src="../javascript/dice.js"></script>
+</body>
+</html>

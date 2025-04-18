@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Coin Flip Game</title>
+  <link rel="stylesheet" href="../css/coin.css"/>
+</head>
+<body>
+  <div class="container">
+    <h1>💰 Coin Flip Challenge 💰</h1>
+    <div class="balance">Balance: ₹<span id="balance">1000</span></div>
+
+    <div class="bet-controls">
+      <input type="number" id="betAmount" placeholder="Enter your bet (₹)" min="1"/>
+      <select id="betChoice">
+        <option value="heads">Heads 🪙</option>
+        <option value="tails">Tails 🎯</option>
+      </select>
+      <button onclick="flipCoin()">Flip Coin</button>
+    </div>
+
+    <div class="coin-container">
+      <div class="coin" id="coin">
+        <div class="heads">🪙</div>
+        <div class="tails">🎯</div>
+      </div>
+    </div>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <!-- Login Modal -->
+<div class="modal" id="loginModal">
+    <div class="modal-content">
+      <h2>Enter Your Player Name</h2>
+      <input type="text" id="playerNameInput" placeholder="Your name" />
+      <button onclick="startGame()">Start Game</button>
+    </div>
+  </div>
+  
+  <!-- Player Stats -->
+  <div class="player-stats" id="playerStats">
+    <h3>👤 Player: <span id="playerName">-</span></h3>
+    <p>Wins: <span id="wins">0</span> | Losses: <span id="losses">0</span></p>
+    <p>Total Bet: ₹<span id="totalBet">0</span> | Total Won: ₹<span id="totalWon">0</span></p>
+  </div>
+  
+  <script src="../javascript/coin.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gaming Hub</title>
+    <link rel="stylesheet" href="../public/style.css">  </head>
+  <body>
+    <div id="app">
+      <header>
+        <a href="../public/index.html" class="logo">Gaming Hub</a>
+        <div class="user-info">
+          <div class="points">
+            <span class="points-icon">🎮</span>
+            <span id="playerPoints">1000</span> points
+          </div>
+          <button class="profile-btn">
+            <span class="profile-icon">👤</span>
+            Profile
+          </button>
+        </div>
+      </header>
+
+      <main>
+        <section class="top-games">
+          <h2>Top Games</h2>
+          <div class="games-grid">
+            <a href="../games-Info/colourInfo.html" class="game-card">
+              <img src="https://placehold.co/300x200" alt="Poker Night">
+              <h3>Colour Recognition</h3>
+            </a>
+            <a href="../games-Info/coinFlip.html" class="game-card">
+              <img src="https://placehold.co/300x200" alt="Coin Flip">
+              <h3>Coin Flip</h3>
+            </a>
+            <a href="../games-Info/cupInfo.html" class="game-card">
+              <img src="https://placehold.co/300x200" alt="Coin Flip">
+              <h3>Cup</h3>
+            </a>
+            <a href="../games-Info/diceInfo.html" class="game-card">
+              <img src="https://placehold.co/300x200" alt="Coin Flip">
+              <h3>Dice</h3>
+            </a>
+            <a href="../games-Info/gameInfo.html" class="game-card">
+              <img src="https://placehold.co/300x200" alt="Coin Flip">
+              <h3>game</h3>
+            </a>
+          </div>
+        </section>
+
+        <section class="categories">
+          <h2>Categories</h2>
+          <div class="category-grid">
+            <div class="category-card" data-category="1v1">
+              <h3>1 v 1</h3>
+              <p>Challenge other players directly</p>
+            </div>
+            <div class="category-card" data-category="1vHouse">
+              <h3>1 v House</h3>
+              <p>Play against the house</p>
+            </div>
+            <div class="category-card" data-category="2vHouse">
+              <h3>2 v House</h3>
+              <p>Team up against the house</p>
+            </div>
+            <div class="category-card" data-category="fun">
+              <h3>Fun</h3>
+              <p>Casual games for everyone</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="../public/main.js"></script>
+  </body>
+</html>
