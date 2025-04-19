@@ -25,7 +25,7 @@ document.querySelectorAll('.category-card').forEach(card => {
 });
 
 // Profile button click handler
-document.querySelector('.profile-btn').addEventListener('click', () => {
+document.querySelector('.profile-btn')?.addEventListener('click', () => {
   console.log('Profile button clicked');
 });
 
@@ -41,7 +41,7 @@ if (playButton) {
   });
 }
 
-// Your Firebase config object
+// Your Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyBmONfeIStjrxO1lSnLKCOIveLPN-udJbs",
   authDomain: "skill-win-d8c81.firebaseapp.com",
@@ -52,15 +52,18 @@ const firebaseConfig = {
   measurementId: "G-V9S0F1XD20"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+// Firebase v10+ import style (must use with <script type="module"> in HTML)
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-// Auth
-const auth = firebase.auth();
-const provider = new firebase.auth.GoogleAuthProvider();
+// Initialize Firebase and Auth
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 
-function signInWithGoogle() {
-  auth.signInWithPopup(provider)
+// Google Sign-In
+window.signInWithGoogle = function () {
+  signInWithPopup(auth, provider)
     .then(result => {
       const user = result.user;
       console.log("Signed in as:", user.displayName);
