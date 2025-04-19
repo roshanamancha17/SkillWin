@@ -40,3 +40,33 @@ if (playButton) {
     // Add game start logic here
   });
 }
+
+// Your Firebase config object
+const firebaseConfig = {
+  apiKey: "AIzaSyBmONfeIStjrxO1lSnLKCOIveLPN-udJbs",
+  authDomain: "skill-win-d8c81.firebaseapp.com",
+  projectId: "skill-win-d8c81",
+  storageBucket: "skill-win-d8c81.appspot.com",
+  messagingSenderId: "808700132713",
+  appId: "1:808700132713:web:1ab8376f139278f89ad1f8",
+  measurementId: "G-V9S0F1XD20"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Auth
+const auth = firebase.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+function signInWithGoogle() {
+  auth.signInWithPopup(provider)
+    .then(result => {
+      const user = result.user;
+      console.log("Signed in as:", user.displayName);
+      document.getElementById("userInfo").textContent = `Welcome, ${user.displayName}`;
+    })
+    .catch(error => {
+      console.error("Error during sign-in", error);
+    });
+}
