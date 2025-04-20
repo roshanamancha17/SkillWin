@@ -22,7 +22,7 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// Sign-In with Google and store data in Firestore
+// Sign-In with Google and show stats
 window.signInWithGoogle = async function () {
   try {
     const result = await signInWithPopup(auth, provider);
@@ -44,13 +44,25 @@ window.signInWithGoogle = async function () {
 
     document.getElementById("userInfo").textContent = `Welcome, ${user.displayName}`;
     console.log("Signed in as:", user.displayName);
+
+    // Fetch updated data
+    const updatedSnap = await getDoc(userRef);
+    const data = updatedSnap.data();
+
+    // Show in UI
+    document.getElementById('statBalance').textContent = data.currentBalance ?? 0;
+    document.getElementById('statWins').textContent = data.win ?? 0;
+    document.getElementById('statLosses').textContent = data.loss ?? 0;
+    document.getElementById('statTotalBetted').textContent = data.totalBettedAmount ?? 0;
+    document.getElementById('statGamesPlayed').textContent = (data.gamesPlayed || []).length;
+
+    document.getElementById('playerStats').style.display = 'block';
   } catch (error) {
     console.error("Error during sign-in", error);
   }
 };
 
 // ========== Game Logic ==========
-
 let playerPoints = 1000;
 
 function updatePoints(points) {
