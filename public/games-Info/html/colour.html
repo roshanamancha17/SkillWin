@@ -21,7 +21,7 @@
 
   <!-- Game Info Section -->
   <div id="gameInfo">
-    <div>Balance: ₹<span id="balance">1000</span></div>
+    <div>Balance: ₹<span id="playerPoints">1000</span></div>
     <div>Current Bet: ₹<input type="number" id="betAmount" value="50" /></div>
     <div>Matched Pairs: <span id="matched">0</span>/8</div>
     <div>Profit: ₹<span id="profit">0.00</span></div>
@@ -44,5 +44,54 @@
 
   <!-- Game Script -->
   <script src="javascript/colour.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Match Twist</title>
+  <link rel="stylesheet" href="css/colour.css" />
+</head>
+<body>
+  <!-- Player Name Form Overlay -->
+  <div id="playerFormOverlay" class="overlay">
+    <div class="form-container">
+      <h2>Welcome to Color Match Game</h2>
+      <form id="playerForm">
+        <label for="playerName">Enter your name:</label>
+        <input type="text" id="playerName" required />
+        <button type="submit">Start Game</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Game Info Section -->
+  <div id="gameInfo">
+    <div>Balance: ₹<span id="playerPoints">Loading...</span></div>
+    <div>Current Bet: ₹<input type="number" id="betAmount" value="50" /></div>
+    <div>Matched Pairs: <span id="matched">0</span>/8</div>
+    <div>Profit: ₹<span id="profit">0.00</span></div>
+    <button id="newGameBtn">New Game</button>
+  </div>
+  
+  <!-- Game Grid -->
+  <div id="grid"></div>
+
+  <!-- Player Stats Section -->
+  <div id="playerStats">
+    <h2>Player Stats</h2>
+    <p>Name: <span id="playerNameDisplay">Anonymous</span></p>
+    <p>Total Bets: ₹<span id="totalBets">0</span></p>
+    <p>Total Wins: <span id="wins">0</span></p>
+    <p>Total Losses: <span id="losses">0</span></p>
+    <p>Net Profit: ₹<span id="netProfit">0.00</span></p>
+    <p>Time Played: <span id="timePlayed">0m 0s</span></p>
+  </div>
+
+  <!-- Firebase Auth & Game Scripts -->
+  <script type="module" src="../main.js"></script>
+  <script type="module" src="javascript/colour.js"></script>
 </body>
 </html>

@@ -6,7 +6,7 @@ let stats = {
     startTime: Date.now(),
   };
   
-  let balance = 1000;
+  let playerPoints = 1000;
   let profit = 0;
   let matched = 0;
   let firstTile = null;
@@ -21,7 +21,7 @@ let stats = {
   }
   
   function updateUI() {
-    document.getElementById("balance").innerText = balance.toFixed(2);
+    document.getElementById("playerPoints").innerText = playerPoints.toFixed(2);
     document.getElementById("profit").innerText = profit.toFixed(2);
     document.getElementById("matched").innerText = matched;
   }
@@ -57,7 +57,7 @@ let stats = {
         secondTile.classList.add("matched");
         matched++;
         const reward = calculateReward(bet);
-        balance += reward;
+        playerPoints += reward;
         profit += reward;
         stats.wins += 1;
         stats.totalBets += bet;
@@ -65,7 +65,7 @@ let stats = {
       } else {
         stats.losses += 1;
         stats.totalBets += bet;
-        balance -= bet;
+        playerPoints -= bet;
         setTimeout(() => {
           firstTile.classList.remove("revealed");
           secondTile.classList.remove("revealed");
