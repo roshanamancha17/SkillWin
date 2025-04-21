@@ -1,8 +1,21 @@
+// main.js
+
 // Firebase v10+ - using ES module imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 import {
-  getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+  arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 // Firebase config
@@ -30,7 +43,6 @@ window.signInWithGoogle = async function () {
     const userRef = doc(db, "players", user.uid);
     const userSnap = await getDoc(userRef);
 
-    // New user? Set default values
     if (!userSnap.exists()) {
       await setDoc(userRef, {
         email: user.email,
@@ -43,19 +55,18 @@ window.signInWithGoogle = async function () {
       });
     }
 
-    // UI updates after sign-in
+    // Update UI
     document.getElementById("userInfo").textContent = `Welcome, ${user.displayName}`;
     document.getElementById("signInBtn").style.display = "none";
     document.getElementById('playerStats').style.display = 'block';
 
-    // Refresh player stats
     await refreshPlayerStats();
   } catch (error) {
     console.error("Error during sign-in", error);
   }
 };
 
-// Refresh balance and stats across dashboard and header
+// Refresh player stats (balance + other stats)
 async function refreshPlayerStats() {
   const user = auth.currentUser;
   if (!user) return;
@@ -66,40 +77,23 @@ async function refreshPlayerStats() {
   if (userSnap.exists()) {
     const data = userSnap.data();
 
-    // 💰 Update balance everywhere
     const balance = data.currentBalance ?? 0;
-    document.getElementById('playerPoints').textContent = balance;
-    document.getElementById('statBalance').textContent = balance;
-
-    // 📊 Update other stats
-    document.getElementById('statWins').textContent = data.win ?? 0;
-    document.getElementById('statLosses').textContent = data.loss ?? 0;
-    document.getElementById('statTotalBetted').textContent = data.totalBettedAmount ?? 0;
-    document.getElementById('statGamesPlayed').textContent = (data.gamesPlayed || []).length;
+    updateUIElement('playerPoints', balance);
+    updateUIElement('statBalance', balance);
+    updateUIElement('statWins', data.win ?? 0);
+    updateUIElement('statLosses', data.loss ?? 0);
+    updateUIElement('statTotalBetted', data.totalBettedAmount ?? 0);
+    updateUIElement('statGamesPlayed', (data.gamesPlayed || []).length);
   }
 }
 
-// Update balance in Firestore and UI
-async function updatePlayerBalance(amountChange) {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const userRef = doc(db, "players", user.uid);
-  const userSnap = await getDoc(userRef);
-
-  if (userSnap.exists()) {
-    const current = userSnap.data().currentBalance || 0;
-    const updated = current + amountChange;
-
-    await updateDoc(userRef, { currentBalance: updated });
-
-    // Update everywhere in UI
-    document.getElementById('playerPoints').textContent = updated;
-    document.getElementById('statBalance').textContent = updated;
-  }
+// 🔄 Utility to update UI element by ID
+function updateUIElement(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
 }
 
-// Track game start and player info
+// Track game click and log it under user's data
 document.querySelectorAll('.game-card').forEach(card => {
   card.addEventListener('click', async () => {
     const gameName = card.querySelector('h3').textContent;
@@ -125,21 +119,34 @@ document.querySelectorAll('.game-card').forEach(card => {
         });
       }
 
-      const userRef = doc(db, "players", user.uid);
-      await updateDoc(userRef, {
+      await updateDoc(doc(db, "players", user.uid), {
         gamesPlayed: arrayUnion(gameName),
       });
+
+      window.location.href = `/games/${gameSlug}.html`;
 
     } catch (error) {
       console.error("Error tracking game:", error);
     }
-
-    // Redirect
-    window.location.href = `/games/${gameSlug}.html`;
   });
 });
 
-// Category selection
+// Optional: fetch balance only
+window.fetchAndDisplayBalance = async function () {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const userRef = doc(db, "players", user.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (userSnap.exists()) {
+    const data = userSnap.data();
+    const balance = data.currentBalance ?? 0;
+    updateUIElement('playerPoints', balance);
+  }
+};
+
+// Category cards
 document.querySelectorAll('.category-card').forEach(card => {
   card.addEventListener('click', () => {
     const category = card.dataset.category;
@@ -152,8 +159,5 @@ document.querySelector('.profile-btn')?.addEventListener('click', () => {
   console.log('Profile button clicked');
 });
 
-// Init points on load
-updatePoints(1000);
-function updatePoints(points) {
-  document.getElementById('playerPoints').textContent = points;
-}
+// Set default UI value for points
+updateUIElement('playerPoints', 1000);
