@@ -5,16 +5,28 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gaming Hub</title>
-    <link rel="stylesheet" href="style.css">  </head>
+    <link rel="stylesheet" href="style.css">
+  </head>
+
   <body>
     <div id="app">
       <header>
         <a href="index.html" class="logo">Gaming Hub</a>
+
         <div class="user-info">
+          <!-- Coins shown in header -->
           <div class="points">
             <span class="points-icon">🎮</span>
             <span id="playerPoints">1000</span> points
           </div>
+
+          <!-- Sign In Button (only visible when logged out) -->
+          <button id="signInBtn" onclick="signInWithGoogle()">Sign In with Google</button>
+
+          <!-- Logged in username -->
+          <p id="userInfo" style="margin-left: 1rem;"></p>
+
+          <!-- Profile -->
           <button class="profile-btn">
             <span class="profile-icon">👤</span>
             Profile
@@ -35,16 +47,16 @@
               <h3>Coin Flip</h3>
             </a>
             <a href="games-Info/cupInfo.html" class="game-card">
-              <img src="https://placehold.co/300x200" alt="Coin Flip">
+              <img src="https://placehold.co/300x200" alt="Cup">
               <h3>Cup</h3>
             </a>
             <a href="games-Info/diceInfo.html" class="game-card">
-              <img src="https://placehold.co/300x200" alt="Coin Flip">
+              <img src="https://placehold.co/300x200" alt="Dice">
               <h3>Dice</h3>
             </a>
             <a href="games-Info/gameInfo.html" class="game-card">
-              <img src="https://placehold.co/300x200" alt="Coin Flip">
-              <h3>game</h3>
+              <img src="https://placehold.co/300x200" alt="Game">
+              <h3>Game</h3>
             </a>
           </div>
         </section>
@@ -70,35 +82,25 @@
             </div>
           </div>
         </section>
+
+        <!-- Player Stats UI -->
+        <section id="playerStats" style="display: none; margin: 2rem auto; padding: 1rem; background: #434343; border-radius: 8px; max-width: 400px; color: white;">
+          <h3>Your Stats</h3>
+          <p><strong>Balance:</strong> <span id="statBalance">-</span></p>
+          <p><strong>Wins:</strong> <span id="statWins">-</span></p>
+          <p><strong>Losses:</strong> <span id="statLosses">-</span></p>
+          <p><strong>Total Betted:</strong> <span id="statTotalBetted">-</span></p>
+          <p><strong>Games Played:</strong> <span id="statGamesPlayed">-</span></p>
+        </section>
       </main>
     </div>
-    <button id="signInBtn" onclick="signInWithGoogle()">Sign In with Google</button>
-    <p id="userInfo"></p>
 
-<!-- Player Stats UI -->
-<div id="playerStats" style="display: none; margin: 1rem; padding: 1rem; background: #434343; border-radius: 8px;">
-  <h3>Your Stats</h3>
-  <p><strong>Balance:</strong> <span id="statBalance">-</span></p>
-  <p><strong>Wins:</strong> <span id="statWins">-</span></p>
-  <p><strong>Losses:</strong> <span id="statLosses">-</span></p>
-  <p><strong>Total Betted:</strong> <span id="statTotalBetted">-</span></p>
-  <p><strong>Games Played:</strong> <span id="statGamesPlayed">-</span></p>
-</div>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
 
-  <!-- Firebase core SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
-
-  <!-- Firebase Authentication -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
-
-  <!-- Firestore SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
-
-
-  <!-- Your main JavaScript -->
-  <script type="module" src="main.js"></script>
-
-
-
+    <!-- Main JavaScript -->
+    <script type="module" src="main.js"></script>
   </body>
 </html>
