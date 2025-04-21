@@ -43,6 +43,7 @@ window.signInWithGoogle = async function () {
     }
 
     document.getElementById("userInfo").textContent = `Welcome, ${user.displayName}`;
+    document.getElementById("signInBtn").style.display = "none";
     console.log("Signed in as:", user.displayName);
 
     // Fetch updated data
