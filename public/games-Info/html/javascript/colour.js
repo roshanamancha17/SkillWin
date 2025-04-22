@@ -1,6 +1,32 @@
 // folder1/game.js
 import { auth, db } from '../../../main.js';
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBmONfelStjrxOl1SnLKCOIveLPN-udJbs",
+  authDomain: "skill-win-d8c81.firebaseapp.com",
+  projectId: "skill-win-d8c81",
+  storageBucket: "skill-win-d8c81.appspot.com",
+  messagingSenderId: "808700132713",
+  appId: "1:808700132713:web:1ab8376f139278f89ad1f8",
+  measurementId: "G-V9S0F1XD20"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// This will fire when the user loads the page
+onAuthStateChanged(auth, user => {
+  if (user) {
+    console.log("User is signed in:", user.email);
+    // You can store user.uid and pass to game logic
+  } else {
+    console.log("No user signed in");
+    // Optional: redirect to login or show sign-in prompt
+  }
+});
 
 let stats = {
   name: '',
