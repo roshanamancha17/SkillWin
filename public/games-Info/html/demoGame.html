@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Demo Game</title>
+  <link rel="stylesheet" href="css/demoGame.css" />
+</head>
+<body>
+  <div class="game-container">
+    <h1>Demo Coin Deduction Game</h1>
+    <p>Balance: <span id="balanceDisplay">-</span></p>
+    <button id="playBtn">Play (Cost: 1 Coin)</button>
+    <p id="resultMsg"></p>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js"></script>
+
+  <!-- Auth + Firebase config -->
+  <script type="module" src="../auth.js"></script>
+  <script type="module" src="javascript/demoGame.js"></script>
+</body>
+</html>
