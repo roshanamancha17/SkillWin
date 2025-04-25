@@ -17,12 +17,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBmONfelStjrxOl1SnLKCOIveLPN-udJbs",
+  authDomain: "skill-win-d8c81.firebaseapp.com",
+  projectId: "skill-win-d8c81",
+  storageBucket: "skill-win-d8c81.firebasestorage.app",
+  messagingSenderId: "808700132713",
+  appId: "1:808700132713:web:1ab8376f139278f89ad1f8"
 };
 
 const app = initializeApp(firebaseConfig);
