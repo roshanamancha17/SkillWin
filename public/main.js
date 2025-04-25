@@ -3,7 +3,7 @@ import {
   signInWithGoogle,
   signOutUser,
   onUserChanged,
-  getCurrentUser,
+  // getCurrentUser,
   getUserData
 } from "./auth.js";
 
