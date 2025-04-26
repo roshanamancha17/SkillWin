@@ -1,55 +1,62 @@
-let balance = 1000;
+let playerRef = null;
 let playerData = {
   name: "",
-  balance: 1000,
+  balance: 10,
   wins: 0,
   losses: 0,
   totalBet: 0,
   totalWon: 0,
 };
 
-// Show login on load
 window.onload = () => {
-  document.getElementById("loginModal").style.display = "flex";
+  document.getElementById('login-btn').addEventListener('click', signInWithGoogle);
 };
 
-function startGame() {
-  const name = document.getElementById("playerNameInput").value.trim();
-  if (!name) return alert("Please enter your name.");
+function signInWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then((result) => {
+      const user = result.user;
+      playerData.name = user.displayName;
+      setupPlayer(user.uid, user.email);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
 
-  // Load from localStorage if exists
-  const stored = JSON.parse(localStorage.getItem(name));
-  if (stored) {
-    playerData = stored;
-  } else {
-    playerData.name = name;
-  }
+function setupPlayer(uid, email) {
+  playerRef = db.collection('players').doc(uid);
 
-  document.getElementById("loginModal").style.display = "none";
-  updateUI();
+  playerRef.get().then((doc) => {
+    if (doc.exists) {
+      playerData = doc.data();
+      playerData.name = doc.data().name || playerData.name;
+    } else {
+      playerRef.set({
+        name: playerData.name,
+        email: email,
+        balance: 10,
+        wins: 0,
+        losses: 0,
+        totalBet: 0,
+        totalWon: 0,
+      });
+    }
+    document.getElementById("login-section").style.display = "none";
+    document.getElementById("game-section").style.display = "block";
+    updateUI();
+  });
 }
 
 function updateUI() {
-  balance = playerData.balance;
-  updateBalance();
-
+  document.getElementById("balance").innerText = playerData.balance.toFixed(2);
   document.getElementById("playerName").innerText = playerData.name;
   document.getElementById("wins").innerText = playerData.wins;
   document.getElementById("losses").innerText = playerData.losses;
   document.getElementById("totalBet").innerText = playerData.totalBet.toFixed(2);
   document.getElementById("totalWon").innerText = playerData.totalWon.toFixed(2);
 }
-
-function updateBalance() {
-  document.getElementById("balance").innerText = balance.toFixed(2);
-}
-
-function savePlayerData() {
-  playerData.balance = balance;
-  localStorage.setItem(playerData.name, JSON.stringify(playerData));
-  updateUI();
-}
-let flipRotation = 0;
 
 function flipCoin() {
   const coin = document.getElementById("coin");
@@ -62,33 +69,32 @@ function flipCoin() {
     return;
   }
 
-  if (betAmount > balance) {
+  if (betAmount > playerData.balance) {
     resultDiv.innerText = "⚠️ Not enough balance!";
     return;
   }
 
   const outcome = Math.random() < 0.5 ? "heads" : "tails";
-  flipRotation += 2880; // Each flip adds 8 full spins
-  const finalRotation = outcome === "heads" ? flipRotation : flipRotation + 180;
 
   coin.style.animation = "none";
-  void coin.offsetWidth; // reset animation hack
+  void coin.offsetWidth;
   coin.style.animation = "flip 2s ease-out";
 
   setTimeout(() => {
-    coin.style.transform = `rotateY(${finalRotation}deg)`;
+    const flipRotation = Math.random() < 0.5 ? 0 : 180;
+    coin.style.transform = `rotateY(${flipRotation}deg)`;
 
     playerData.totalBet += betAmount;
 
     if (userChoice === outcome) {
       const payoutMultiplier = 0.98;
       const winAmount = betAmount * payoutMultiplier;
-      balance += winAmount;
+      playerData.balance += winAmount;
       playerData.wins += 1;
       playerData.totalWon += winAmount;
       resultDiv.innerText = `🎉 You won ₹${winAmount.toFixed(2)} (2% edge applied)`;
     } else {
-      balance -= betAmount;
+      playerData.balance -= betAmount;
       playerData.losses += 1;
       resultDiv.innerText = `😢 You lost! Coin was ${outcome.toUpperCase()}.`;
     }
@@ -97,3 +103,16 @@ function flipCoin() {
   }, 2000);
 }
 
+function savePlayerData() {
+  if (playerRef) {
+    playerRef.update({
+      balance: playerData.balance,
+      wins: playerData.wins,
+      losses: playerData.losses,
+      totalBet: playerData.totalBet,
+      totalWon: playerData.totalWon,
+    }).then(() => {
+      updateUI();
+    });
+  }
+}
