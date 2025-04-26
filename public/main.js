@@ -4,7 +4,7 @@ import {
   signOutUser,
   onUserChanged,
   // getCurrentUser,
-  getUserData
+  // getUserData
 } from "./auth.js";
 
 document.getElementById("signInBtn")?.addEventListener("click", async () => {
