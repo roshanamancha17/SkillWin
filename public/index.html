@@ -6,6 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Skill Win</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Loading Annimation -->
+    <style>
+      #balanceDisplay.loading::after {
+        content: ' .';
+        animation: dots 1s steps(5, end) infinite;
+      }
+      
+      @keyframes dots {
+        0%, 20% {
+          content: ' .';
+        }
+        40% {
+          content: ' ..';
+        }
+        60% {
+          content: ' ...';
+        }
+        80%, 100% {
+          content: ' ....';
+        }
+      }
+      </style>
+      
   </head>
 
   <body>
@@ -17,7 +40,7 @@
           <!-- Coins shown in header -->
           <div class="points">
             <span class="points-icon">🎮</span>
-            <span id="playerPoints">0</span> points
+            <span id="playerPoints">Loading...</span> points
           </div>
 
           <!-- Sign In Button -->

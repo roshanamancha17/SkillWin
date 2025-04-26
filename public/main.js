@@ -34,6 +34,7 @@ async function updateUI(user) {
 
     if (userData) {
       if (playerPoints) {
+        playerPoints.classList.remove('loading');
         playerPoints.textContent = userData.currentBalance;
       }
 
