@@ -1,13 +1,24 @@
-import { auth, db } from "../../auth";
-import {
-  doc,
-  getDoc,
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+// Correct imports directly from Firebase CDN
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+// Your Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyBmONfelStjrxOl1SnLKCOIveLPN-udJbs",
+  authDomain: "skill-win-d8c81.firebaseapp.com",
+  projectId: "skill-win-d8c81",
+  storageBucket: "skill-win-d8c81.firebasestorage.app",
+  messagingSenderId: "808700132713",
+  appId: "1:808700132713:web:1ab8376f139278f89ad1f8"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Your DOM elements
 const balanceDisplay = document.getElementById("balanceDisplay");
 const resultMsg = document.getElementById("resultMsg");
 const playBtn = document.getElementById("playBtn");
@@ -15,6 +26,7 @@ const playBtn = document.getElementById("playBtn");
 let currentUser = null;
 let currentBalance = 0;
 
+// Listen for auth state changes
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     currentUser = user;
@@ -31,6 +43,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
+// Handle Play button click
 playBtn.addEventListener("click", async () => {
   if (currentBalance < 1) {
     resultMsg.textContent = "Not enough coins!";
