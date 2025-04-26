@@ -1,4 +1,3 @@
-// auth.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
 import {
   getAuth,
@@ -9,6 +8,7 @@ import {
   setPersistence,
   browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
 import {
   getFirestore,
   doc,
@@ -16,6 +16,7 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
+// 🔥 Your Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyBmONfelStjrxOl1SnLKCOIveLPN-udJbs",
   authDomain: "skill-win-d8c81.firebaseapp.com",
@@ -25,24 +26,28 @@ const firebaseConfig = {
   appId: "1:808700132713:web:1ab8376f139278f89ad1f8"
 };
 
+// 🔧 Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const provider = new GoogleAuthProvider();
 
-// Persist login even when page is refreshed or reopened
+// 🔐 Make login persistent across page reloads
 setPersistence(auth, browserLocalPersistence);
 
+// 📤 Export auth and db for use in other modules
 export { auth, db };
 
-// Sign-in function (creates Firestore doc if not exists)
+// 👤 Sign in with Google (create player if not exists)
 export async function signInWithGoogle() {
   const result = await signInWithPopup(auth, provider);
   const user = result.user;
 
   const userRef = doc(db, "players", user.uid);
   const userSnap = await getDoc(userRef);
+
   if (!userSnap.exists()) {
+    // Create default player document
     await setDoc(userRef, {
       email: user.email,
       userId: user.uid,
@@ -57,14 +62,17 @@ export async function signInWithGoogle() {
   return user;
 }
 
+// 🔓 Sign out user
 export function signOutUser() {
   return signOut(auth);
 }
 
+// 👂 Listen for auth changes
 export function onUserChanged(callback) {
   onAuthStateChanged(auth, callback);
 }
 
+// 📥 Get currently signed-in user
 export function getCurrentUser() {
   return auth.currentUser;
 }
