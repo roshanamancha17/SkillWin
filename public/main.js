@@ -3,9 +3,9 @@ import {
   signInWithGoogle,
   signOutUser,
   onUserChanged,
-  // getCurrentUser,
-  // getUserData
+  db
 } from "./auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
 document.getElementById("signInBtn")?.addEventListener("click", async () => {
   try {
@@ -25,6 +25,18 @@ document.getElementById("signOutBtn")?.addEventListener("click", async () => {
 onUserChanged((user) => {
   updateUI(user);
 });
+
+// ✅ Added this function
+async function getUserData(uid) {
+  const userDocRef = doc(db, "players", uid);
+  const userDocSnap = await getDoc(userDocRef);
+  if (userDocSnap.exists()) {
+    return userDocSnap.data();
+  } else {
+    console.error("No user data found!");
+    return null;
+  }
+}
 
 async function updateUI(user) {
   const userInfo = document.getElementById("userInfo");
