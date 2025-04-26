@@ -1,4 +1,4 @@
-import { auth, db } from "../../auth";
+import { auth, db } from "../auth";
 import {
   doc,
   getDoc,
