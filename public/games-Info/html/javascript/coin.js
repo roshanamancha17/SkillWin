@@ -1,118 +1,110 @@
-let playerRef = null;
-let playerData = {
-  name: "",
-  balance: 10,
-  wins: 0,
-  losses: 0,
-  totalBet: 0,
-  totalWon: 0,
+// Initialize Firebase
+const firebaseConfig = {
+  // your config here
+  apiKey: "AIzaSyBmONfelStjrxOl1SnLKCOIveLPN-udJbs",
+  authDomain: "skill-win-d8c81.firebaseapp.com",
+  projectId: "skill-win-d8c81",
+  storageBucket: "skill-win-d8c81.firebasestorage.app",
+  messagingSenderId: "808700132713",
+  appId: "1:808700132713:web:1ab8376f139278f89ad1f8"
 };
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
 
-window.onload = () => {
-  document.getElementById('login-btn').addEventListener('click', signInWithGoogle);
-};
+let playerData = {}; // store user data after login
 
-function signInWithGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .then((result) => {
-      const user = result.user;
-      playerData.name = user.displayName;
-      setupPlayer(user.uid, user.email);
-    })
-    .catch((error) => {
-      console.error(error);
-    });
+// On page load, check if user is already logged in
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+      // User is signed in
+      const playerRef = db.collection('players').doc(user.uid);
+      const playerDoc = await playerRef.get();
+
+      if (!playerDoc.exists) {
+          // (optional) create new user if needed
+          await playerRef.set({
+              userId: user.uid,
+              email: user.email,
+              currentBalance: 10,
+              wins: 0,
+              losses: 0,
+              totalBettedAmount: 0,
+              gamesPlayed: 0,
+          });
+          playerData = {
+              userId: user.uid,
+              currentBalance: 10,
+              wins: 0,
+              losses: 0,
+              totalBettedAmount: 0,
+              gamesPlayed: 0,
+          };
+      } else {
+          playerData = playerDoc.data();
+      }
+
+      updateUI(playerData);
+  } else {
+      // No user is signed in, redirect to login page
+      window.location.href = "login.html"; // or whatever your login page is
+  }
+});
+
+// Update UI with player data
+function updateUI(playerData) {
+  const balance = playerData.currentBalance ?? 0;
+  document.getElementById('balance').innerText = `₹${balance.toFixed(2)}`;
 }
 
-function setupPlayer(uid, email) {
-  playerRef = db.collection('players').doc(uid);
+// Flip Coin Game
+async function flipCoin() {
+  const betAmount = parseFloat(document.getElementById('betAmount').value);
+  const userChoice = document.getElementById('guess').value;
 
-  playerRef.get().then((doc) => {
-    if (doc.exists) {
-      playerData = doc.data();
-      playerData.name = doc.data().name || playerData.name;
-    } else {
-      playerRef.set({
-        name: playerData.name,
-        email: email,
-        balance: 10,
-        wins: 0,
-        losses: 0,
-        totalBet: 0,
-        totalWon: 0,
+  if (playerData.currentBalance <= 0) {
+      alert('Your balance is ₹0. Please add funds or win to continue playing.');
+      return;
+  }
+
+  if (isNaN(betAmount) || betAmount <= 0) {
+      alert('Please enter a valid bet amount.');
+      return;
+  }
+
+  if (betAmount > playerData.currentBalance) {
+      alert('You cannot bet more than your current balance.');
+      return;
+  }
+
+  const result = Math.random() < 0.5 ? 'Heads' : 'Tails';
+  document.getElementById('result').innerText = result.toUpperCase();
+
+  if (userChoice === result) {
+      playerData.currentBalance += betAmount;
+      playerData.wins = (playerData.wins ?? 0) + 1;
+  } else {
+      playerData.currentBalance -= betAmount;
+      playerData.losses = (playerData.losses ?? 0) + 1;
+  }
+
+  playerData.totalBettedAmount = (playerData.totalBettedAmount ?? 0) + betAmount;
+  playerData.gamesPlayed = (playerData.gamesPlayed ?? 0) + 1;
+
+  try {
+      const playerRef = db.collection('players').doc(playerData.userId);
+      await playerRef.update({
+          currentBalance: playerData.currentBalance,
+          wins: playerData.wins,
+          losses: playerData.losses,
+          totalBettedAmount: playerData.totalBettedAmount,
+          gamesPlayed: playerData.gamesPlayed
       });
-    }
-    document.getElementById("login-section").style.display = "none";
-    document.getElementById("game-section").style.display = "block";
-    updateUI();
-  });
-}
-
-function updateUI() {
-  document.getElementById("balance").innerText = playerData.balance.toFixed(2);
-  document.getElementById("playerName").innerText = playerData.name;
-  document.getElementById("wins").innerText = playerData.wins;
-  document.getElementById("losses").innerText = playerData.losses;
-  document.getElementById("totalBet").innerText = playerData.totalBet.toFixed(2);
-  document.getElementById("totalWon").innerText = playerData.totalWon.toFixed(2);
-}
-
-function flipCoin() {
-  const coin = document.getElementById("coin");
-  const resultDiv = document.getElementById("result");
-  const betAmount = parseFloat(document.getElementById("betAmount").value);
-  const userChoice = document.getElementById("betChoice").value;
-
-  if (!betAmount || betAmount <= 0) {
-    resultDiv.innerText = "⚠️ Please enter a valid bet amount.";
-    return;
-  }
-
-  if (betAmount > playerData.balance) {
-    resultDiv.innerText = "⚠️ Not enough balance!";
-    return;
-  }
-
-  const outcome = Math.random() < 0.5 ? "heads" : "tails";
-
-  coin.style.animation = "none";
-  void coin.offsetWidth;
-  coin.style.animation = "flip 2s ease-out";
-
-  setTimeout(() => {
-    const flipRotation = Math.random() < 0.5 ? 0 : 180;
-    coin.style.transform = `rotateY(${flipRotation}deg)`;
-
-    playerData.totalBet += betAmount;
-
-    if (userChoice === outcome) {
-      const payoutMultiplier = 0.98;
-      const winAmount = betAmount * payoutMultiplier;
-      playerData.balance += winAmount;
-      playerData.wins += 1;
-      playerData.totalWon += winAmount;
-      resultDiv.innerText = `🎉 You won ₹${winAmount.toFixed(2)} (2% edge applied)`;
-    } else {
-      playerData.balance -= betAmount;
-      playerData.losses += 1;
-      resultDiv.innerText = `😢 You lost! Coin was ${outcome.toUpperCase()}.`;
-    }
-
-    savePlayerData();
-  }, 2000);
-}
-
-function savePlayerData() {
-  if (playerRef) {
-    playerRef.update({
-      balance: playerData.balance,
-      wins: playerData.wins,
-      losses: playerData.losses,
-      totalBet: playerData.totalBet,
-      totalWon: playerData.totalWon,
-    }).then(() => {
-      updateUI();
-    });
+      updateUI(playerData);
+  } catch (error) {
+      console.error('Error updating player data:', error);
   }
 }
+
+// Hook flip button
+document.getElementById('flip-button').addEventListener('click', flipCoin);
