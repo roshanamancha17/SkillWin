@@ -1,7 +1,5 @@
 // Initialize Firebase
 
-const db = firebase.firestore();
-const auth = firebase.auth();
 
 let playerData = {}; // store user data after login
 
