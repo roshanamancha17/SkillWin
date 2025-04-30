@@ -1,14 +1,12 @@
-// Initialize Firebase (firebase-config.js already included)
-
 // Setup playerData
 let playerData = {};
+let houseBalance = 0;
 
-// On page load, check if user is already logged in
+// On page load, check if user is logged in
 auth.onAuthStateChanged(async (user) => {
   if (user) {
     const playerRef = db.collection('players').doc(user.uid);
     const playerDoc = await playerRef.get();
-
     if (!playerDoc.exists) {
       await playerRef.set({
         userId: user.uid,
@@ -31,26 +29,26 @@ auth.onAuthStateChanged(async (user) => {
       playerData = playerDoc.data();
     }
 
+    const houseDoc = await db.collection('meta').doc('houseWallet').get();
+    if (houseDoc.exists) {
+      houseBalance = houseDoc.data().balance ?? 10000000;
+    }
+
     updateUI(playerData);
   } else {
     window.location.href = "login.html";
   }
 });
 
-// Update UI
 function updateUI(playerData) {
-  const balance = playerData.currentBalance ?? 0;
-  document.getElementById('balance').innerText = `${balance.toFixed(2)}`; // removed ₹
+  document.getElementById('balance').innerText = `${(playerData.currentBalance ?? 0).toFixed(2)}`;
 }
 
-// Flip Coin
-let flipCount = 0;
-
+// Flip Coin Function
 async function flipCoin() {
   const betAmount = parseFloat(document.getElementById('betAmount').value);
   const userChoice = document.getElementById('betChoice').value.toLowerCase();
   const resultDiv = document.getElementById('result');
-  const coin = document.getElementById('coin');
 
   if (playerData.currentBalance <= 0) {
     alert('Your balance is ₹0. Please add funds or win to continue playing.');
@@ -67,59 +65,60 @@ async function flipCoin() {
     return;
   }
 
-  // Random result
+  if (betAmount > houseBalance) {
+    alert('House does not have enough funds to match your bet. Try a lower amount.');
+    return;
+  }
+
+  // Deduct from both player and house
+  playerData.currentBalance -= betAmount;
+  houseBalance -= betAmount;
+
   const result = Math.random() < 0.5 ? 'heads' : 'tails';
-  const isHeads = result === 'heads';
+  const houseCut = betAmount * 0.02;
+  const pot = betAmount * 2;
+  const winnings = pot - houseCut;
 
-  // Animate: rotate multiple times + show correct face
-  flipCount += 1;
-  const extraRotation = isHeads ? 0 : 180;
-  const totalRotation = 360 * 6 * flipCount + extraRotation;
+  let message = '';
+  let playerWon = userChoice === result;
 
-  coin.style.transition = 'transform 2s ease-out';
-  coin.style.transform = `rotateY(${totalRotation}deg)`;
+  if (playerWon) {
+    playerData.currentBalance += winnings;
+    playerData.wins = (playerData.wins ?? 0) + 1;
+    message = `🎉 You WON! It was ${result.toUpperCase()}. You earned ₹${winnings.toFixed(2)}!`;
+  } else {
+    houseBalance += winnings;
+    playerData.losses = (playerData.losses ?? 0) + 1;
+    message = `😞 You LOST! It was ${result.toUpperCase()}. You lost ₹${betAmount.toFixed(2)}.`;
+  }
 
-  // Delay result processing until animation finishes
-  setTimeout(async () => {
-    const houseCut = betAmount * 0.02;
-    const netBet = betAmount - houseCut;
-    let message = '';
+  playerData.totalBettedAmount = (playerData.totalBettedAmount ?? 0) + betAmount;
+  playerData.gamesPlayed = (playerData.gamesPlayed ?? 0) + 1;
 
-    if (userChoice === result) {
-      playerData.currentBalance += netBet;
-      playerData.wins = (playerData.wins ?? 0) + 1;
-      message = `🎉 You WON! It was ${result.toUpperCase()}. You earned ₹${netBet.toFixed(2)}!`;
-    } else {
-      playerData.currentBalance -= betAmount;
-      playerData.losses = (playerData.losses ?? 0) + 1;
-      message = `😞 You LOST! It was ${result.toUpperCase()}. You lost ₹${betAmount.toFixed(2)}.`;
-    }
+  try {
+    // Update Player Data
+    await db.collection('players').doc(playerData.userId).update({
+      currentBalance: playerData.currentBalance,
+      wins: playerData.wins,
+      losses: playerData.losses,
+      totalBettedAmount: playerData.totalBettedAmount,
+      gamesPlayed: playerData.gamesPlayed
+    });
 
-    playerData.totalBettedAmount = (playerData.totalBettedAmount ?? 0) + betAmount;
-    playerData.gamesPlayed = (playerData.gamesPlayed ?? 0) + 1;
+    // Update House Balance
+    await db.collection('meta').doc('houseWallet').set({ balance: houseBalance });
 
-    try {
-      const playerRef = db.collection('players').doc(playerData.userId);
-      await playerRef.update({
-        currentBalance: playerData.currentBalance,
-        wins: playerData.wins,
-        losses: playerData.losses,
-        totalBettedAmount: playerData.totalBettedAmount,
-        gamesPlayed: playerData.gamesPlayed,
-      });
+    // Increment House Cut
+    await db.collection('meta').doc('houseCut').set({
+      totalAmount: firebase.firestore.FieldValue.increment(houseCut)
+    }, { merge: true });
 
-      await db.collection('meta').doc('house').update({
-        totalAmount: firebase.firestore.FieldValue.increment(houseCut)
-      });
-
-      resultDiv.innerText = message;
-      updateUI(playerData);
-    } catch (error) {
-      console.error('Error updating Firestore:', error);
-    }
-  }, 2000); // Wait for flip animation
+    resultDiv.innerText = message;
+    updateUI(playerData);
+  } catch (error) {
+    console.error('Error updating Firestore:', error);
+  }
 }
-
 
 // Add event listener safely
 document.addEventListener('DOMContentLoaded', function () {
