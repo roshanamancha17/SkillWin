@@ -92,26 +92,7 @@ body {
   transform: rotateY(180deg);
 }
 
-@keyframes flip {
-    0% {
-      transform: rotateY(0deg) translateY(0) scale(1);
-    }
-    20% {
-      transform: rotateY(720deg) translateY(-60px) scale(1.05);
-    }
-    40% {
-      transform: rotateY(1440deg) translateY(-120px) scale(1.1);
-    }
-    60% {
-      transform: rotateY(2160deg) translateY(-90px) scale(1.05);
-    }
-    80% {
-      transform: rotateY(2640deg) translateY(-40px) scale(1.02);
-    }
-    100% {
-      transform: rotateY(2880deg) translateY(0) scale(1);
-    }
-  }
+
   
   .coin div {
     position: absolute;
