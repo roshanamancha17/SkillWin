@@ -2,24 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Color Match Twist</title>
-  <link rel="stylesheet" href="css/colour.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Match Game</title>
+  <link rel="stylesheet" href="css/memory.css" />
 </head>
 <body>
   <div class="game-container">
-    <div id="player-info">
+    <h1>Memory Match Game</h1>
+
+    <div id="game-options">
+      <button id="mode-attempts">Play: Attempts Mode</button>
+      <button id="mode-time">Play: Time Mode</button>
+    </div>
+
+    <div id="game-info" class="hidden">
+      <p>Mode: <span id="gameMode"></span></p>
+      <p>Attempts: <span id="attempts">0</span></p>
+      <p>Time: <span id="time">0</span> seconds</p>
       <p>Coins: <span id="playerPoints">Loading...</span></p>
     </div>
-    <div id="colorDisplay">Click to Start</div>
-    <button id="matchButton">Match</button>
-    <input type="number" id="betAmount" placeholder="Enter bet amount" min="1" />
-    <p id="matched"></p>
+
+    <div id="board" class="board hidden"></div>
     <p id="result"></p>
   </div>
 
-  <!-- Firebase + Main Script -->
-  <script type="module" src="../main.js" defer></script>
-  <script type="module" src="javascript/colour.js" defer></script>
+  <script type="module" src="../main.js"></script>
+  <script type="module" src="javascript/memory.js"></script>
 </body>
 </html>
