@@ -41,21 +41,59 @@ function showColor() {
   resultDisplay.textContent = "";
 }
 
-function checkMatch(bet, uid) {
+async function checkMatch(bet, uid) {
   const randomColor = getRandomColor();
   matchedDisplay.textContent = `Random Color: ${randomColor}`;
+  const playerDocRef = doc(db, "players", uid);
+
+  let outcome = "";
+  let winnings = 0;
 
   if (currentColor === randomColor) {
-    const winnings = bet * 2;
+    winnings = bet * 2;
     playerPoints += winnings;
     resultDisplay.textContent = `You win ₹${winnings}!`;
+    outcome = "win";
   } else {
     playerPoints -= bet;
     resultDisplay.textContent = "Try Again!";
+    outcome = "loss";
   }
 
   updateUI();
-  updateBalanceInFirestore(uid, playerPoints);
+
+  // Update player document
+  try {
+    const playerDoc = await getDoc(playerDocRef);
+    if (playerDoc.exists()) {
+      const data = playerDoc.data();
+      const newStats = {
+        currentBalance: playerPoints,
+        totalBettedAmount: (data.totalBettedAmount || 0) + bet,
+        gamesPlayed: (data.gamesPlayed || 0) + 1,
+        wins: outcome === "win" ? (data.wins || 0) + 1 : (data.wins || 0),
+        losses: outcome === "loss" ? (data.losses || 0) + 1 : (data.losses || 0)
+      };
+      await updateDoc(playerDocRef, newStats);
+    }
+  } catch (err) {
+    console.error("Error updating player stats:", err);
+  }
+
+  // Save to history
+  try {
+    const historyRef = doc(db, `players/${uid}/colorMatchHistory/${Date.now()}`);
+    await setDoc(historyRef, {
+      timestamp: new Date(),
+      bet,
+      outcome,
+      winnings,
+      matchedColor: randomColor,
+      selectedColor: currentColor
+    });
+  } catch (err) {
+    console.error("Error saving game history:", err);
+  }
 }
 
 function getInitialBalance() {
