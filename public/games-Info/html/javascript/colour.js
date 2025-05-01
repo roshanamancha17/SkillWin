@@ -2,6 +2,7 @@ import { auth, db } from '../../main.js';
 import {
   doc,
   getDoc,
+  setDoc,
   updateDoc
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
@@ -19,18 +20,13 @@ let playerPoints = 0;
 let canClick = true;
 
 function updateUI() {
-  playerPointsDisplay.textContent = playerPoints;
+  if (playerPointsDisplay) {
+    playerPointsDisplay.textContent = playerPoints;
+  }
 }
 
 function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
-}
-
-function updateBalanceInFirestore(uid, newBalance) {
-  const docRef = doc(db, "players", uid);
-  return updateDoc(docRef, {
-    currentBalance: newBalance
-  });
 }
 
 function showColor() {
@@ -62,25 +58,22 @@ async function checkMatch(bet, uid) {
 
   updateUI();
 
-  // Update player document
   try {
     const playerDoc = await getDoc(playerDocRef);
     if (playerDoc.exists()) {
       const data = playerDoc.data();
-      const newStats = {
+      await updateDoc(playerDocRef, {
         currentBalance: playerPoints,
         totalBettedAmount: (data.totalBettedAmount || 0) + bet,
         gamesPlayed: (data.gamesPlayed || 0) + 1,
-        wins: outcome === "win" ? (data.wins || 0) + 1 : (data.wins || 0),
-        losses: outcome === "loss" ? (data.losses || 0) + 1 : (data.losses || 0)
-      };
-      await updateDoc(playerDocRef, newStats);
+        wins: outcome === "win" ? (data.wins || 0) + 1 : data.wins,
+        losses: outcome === "loss" ? (data.losses || 0) + 1 : data.losses
+      });
     }
   } catch (err) {
-    console.error("Error updating player stats:", err);
+    console.error("Error updating stats:", err);
   }
 
-  // Save to history
   try {
     const historyRef = doc(db, `players/${uid}/colorMatchHistory/${Date.now()}`);
     await setDoc(historyRef, {
@@ -101,11 +94,7 @@ function getInitialBalance() {
     if (user) {
       const docRef = doc(db, "players", user.uid);
       const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        playerPoints = docSnap.data().currentBalance ?? 0;
-      } else {
-        playerPoints = 1000; // fallback demo balance
-      }
+      playerPoints = docSnap.exists() ? docSnap.data().currentBalance : 1000;
       updateUI();
     }
   });
@@ -121,7 +110,7 @@ matchButton.addEventListener("click", () => {
   }
 
   if (bet > playerPoints) {
-    alert("You don't have enough coins!");
+    alert("Not enough coins!");
     return;
   }
 
@@ -135,7 +124,7 @@ matchButton.addEventListener("click", () => {
         canClick = true;
       }
     });
-  }, 1000); // delay to show color before result
+  }, 1000);
 });
 
 getInitialBalance();

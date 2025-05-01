@@ -3,39 +3,35 @@ import {
   signInWithGoogle,
   signOutUser,
   onUserChanged,
+  auth,
   db
 } from "./auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-async function getUserData(uid) { // 👈 define it early
+// Get player data
+async function getUserData(uid) {
   const userDocRef = doc(db, "players", uid);
   const userDocSnap = await getDoc(userDocRef);
-  if (userDocSnap.exists()) {
-    return userDocSnap.data();
-  } else {
-    console.error("No user data found!");
-    return null;
-  }
+  return userDocSnap.exists() ? userDocSnap.data() : null;
 }
 
-// --- THEN your UI handling code ---
+// Update UI
 async function updateUI(user) {
   const userInfo = document.getElementById("userInfo");
   const playerPoints = document.getElementById("playerPoints");
   const playerStatsSection = document.getElementById("playerStats");
+
+  if (!userInfo || !playerPoints) return;
 
   if (user) {
     userInfo.textContent = `Logged in as ${user.email}`;
     document.getElementById("signInBtn")?.classList.add("hidden");
     document.getElementById("signOutBtn")?.classList.remove("hidden");
 
-    // Fetch user stats
     const userData = await getUserData(user.uid);
 
     if (userData) {
-      if (playerPoints) {
-        playerPoints.textContent = userData.currentBalance;
-      }
+      playerPoints.textContent = userData.currentBalance;
 
       if (playerStatsSection) {
         document.getElementById("statBalance").textContent = userData.currentBalance;
@@ -51,31 +47,30 @@ async function updateUI(user) {
     document.getElementById("signInBtn")?.classList.remove("hidden");
     document.getElementById("signOutBtn")?.classList.add("hidden");
 
-    if (playerPoints) {
-      playerPoints.textContent = "0";
-    }
-    if (playerStatsSection) {
-      playerStatsSection.style.display = "none";
-    }
+    playerPoints.textContent = "0";
+    if (playerStatsSection) playerStatsSection.style.display = "none";
   }
 }
 
-// --- your event listeners ---
-document.getElementById("signInBtn")?.addEventListener("click", async () => {
-  try {
-    const user = await signInWithGoogle();
-    console.log("Signed in as:", user.email);
+// Wait for DOM before adding listeners
+window.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("signInBtn")?.addEventListener("click", async () => {
+    try {
+      const user = await signInWithGoogle();
+      updateUI(user);
+    } catch (err) {
+      console.error("Sign-in failed:", err);
+    }
+  });
+
+  document.getElementById("signOutBtn")?.addEventListener("click", async () => {
+    await signOutUser();
+    updateUI(null);
+  });
+
+  onUserChanged((user) => {
     updateUI(user);
-  } catch (err) {
-    console.error("Sign-in failed:", err);
-  }
+  });
 });
 
-document.getElementById("signOutBtn")?.addEventListener("click", async () => {
-  await signOutUser();
-  updateUI(null);
-});
-
-onUserChanged((user) => {
-  updateUI(user);
-});
+export { auth, db };
