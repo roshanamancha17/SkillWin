@@ -28,6 +28,7 @@ let startTime = 0;
 let playerPoints = 0;
 let shuffleCounter = 0;
 let currentMode = "";
+let gameOver = false;
 
 function shuffleArray(array) {
   return array.sort(() => 0.5 - Math.random());
@@ -38,6 +39,10 @@ function startTimer() {
   timer = setInterval(() => {
     const time = Math.floor((Date.now() - startTime) / 1000);
     document.getElementById("time").textContent = time;
+
+    if (time >= 90) {
+      handleLoss("Time limit exceeded! You lost the game.");
+    }
   }, 1000);
 }
 
@@ -51,14 +56,16 @@ function updateBalance(uid, newBalance) {
 }
 
 function rewardPlayer(mode, uid) {
+  if (gameOver) return;
+
   let payout = 0;
+  const timeTaken = Math.floor((Date.now() - startTime) / 1000);
 
   if (mode === "attempts") {
     if (attempts <= 16) payout = 20;
     else if (attempts <= 22) payout = 10;
     else payout = 5;
   } else if (mode === "time") {
-    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
     if (timeTaken <= 30) payout = 20;
     else if (timeTaken <= 45) payout = 10;
     else payout = 5;
@@ -69,6 +76,15 @@ function rewardPlayer(mode, uid) {
   alert(`Game complete! You won ₹${payout}`);
   playerPointsDisplay.textContent = playerPoints;
   stopTimer();
+  gameOver = true;
+}
+
+function handleLoss(message) {
+  if (gameOver) return;
+  alert(message);
+  stopTimer();
+  gameOver = true;
+  quitGame();
 }
 
 function renderBoard() {
@@ -100,39 +116,44 @@ function renderBoard() {
 }
 
 function handleTileClick(index) {
-  if (matchedIndices.has(index) || flipped.includes(index)) return;
+  if (gameOver || matchedIndices.has(index) || flipped.includes(index)) return;
 
   const tile = board.children[index];
   tile.classList.add("flipped");
   flipped.push(index);
 
   if (flipped.length === 2) {
-    attempts++;
-    document.getElementById("attempts").textContent = attempts;
     const [first, second] = flipped;
+    const color1 = tiles[first];
+    const color2 = tiles[second];
 
-    if (tiles[first] === tiles[second]) {
-      matchedIndices.add(first);
-      matchedIndices.add(second);
-      flipped = [];
-
-      if (matchedIndices.size === 16) {
-        onAuthStateChanged(auth, (user) => {
-          if (user) rewardPlayer(currentMode, user.uid);
-        });
-      }
-    } else {
-      shuffleCounter++;
-      setTimeout(() => {
+    setTimeout(() => {
+      if (color1 === color2) {
+        matchedIndices.add(first);
+        matchedIndices.add(second);
+        if (matchedIndices.size === 16) {
+          onAuthStateChanged(auth, (user) => {
+            if (user) rewardPlayer(currentMode, user.uid);
+          });
+        }
+      } else {
         board.children[first].classList.remove("flipped");
         board.children[second].classList.remove("flipped");
-        flipped = [];
-
+        shuffleCounter++;
         if (shuffleCounter === 3) {
           shuffleUnmatchedTiles();
           shuffleCounter = 0;
         }
-      }, 600);
+      }
+
+      flipped = [];
+    }, 600);
+
+    attempts++;
+    document.getElementById("attempts").textContent = attempts;
+
+    if (currentMode === "attempts" && attempts > 25) {
+      handleLoss("Too many attempts! You lost the game.");
     }
   }
 }
@@ -141,7 +162,6 @@ function shuffleUnmatchedTiles() {
   const unmatchedIndices = [];
   const unmatchedColors = [];
 
-  // Collect colors of unmatched tiles
   for (let i = 0; i < 16; i++) {
     if (!matchedIndices.has(i)) {
       unmatchedIndices.push(i);
@@ -149,17 +169,14 @@ function shuffleUnmatchedTiles() {
     }
   }
 
-  // Shuffle colors
   const shuffled = shuffleArray(unmatchedColors);
 
-  // Reassign shuffled colors back to tiles[] and DOM
   unmatchedIndices.forEach((tileIndex, i) => {
     tiles[tileIndex] = shuffled[i];
     const tileBack = board.children[tileIndex].querySelector('.tile-back');
     tileBack.style.backgroundColor = shuffled[i];
   });
 }
-
 
 function getPlayerBalance() {
   onAuthStateChanged(auth, async (user) => {
@@ -208,6 +225,7 @@ function startGame(mode) {
     attempts = 0;
     shuffleCounter = 0;
     stopTimer();
+    gameOver = false;
 
     renderBoard();
     if (mode === "time") startTimer();
@@ -226,6 +244,7 @@ function quitGame() {
   flipped = [];
   attempts = 0;
   shuffleCounter = 0;
+  gameOver = true;
 }
 
 modeAttemptsBtn.addEventListener("click", () => startGame("attempts"));
