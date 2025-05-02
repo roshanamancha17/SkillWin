@@ -6,9 +6,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-const board = document.getElementById("gameBoard");
+const board = document.getElementById("board");
 const modeSelector = document.getElementById("gameMode");
-const startBtn = document.getElementById("startGameBtn");
+const modeAttemptsBtn = document.getElementById("mode-attempts");
+const modeTimeBtn = document.getElementById("mode-time");
 const playerPointsDisplay = document.getElementById("playerPoints");
 const statusDisplay = document.getElementById("gameStatus");
 
@@ -32,6 +33,7 @@ function startTimer() {
   startTime = Date.now();
   timer = setInterval(() => {
     const time = Math.floor((Date.now() - startTime) / 1000);
+    document.getElementById("time").textContent = time;
     statusDisplay.textContent = `Time: ${time}s | Attempts: ${attempts}`;
   }, 1000);
 }
@@ -88,14 +90,16 @@ function handleTileClick(index) {
 
   if (flipped.length === 2) {
     attempts++;
+    document.getElementById("attempts").textContent = attempts;
     const [first, second] = flipped;
+
     if (tiles[first] === tiles[second]) {
       matchedIndices.add(first);
       matchedIndices.add(second);
       flipped = [];
       if (matchedIndices.size === 16) {
         onAuthStateChanged(auth, (user) => {
-          if (user) rewardPlayer(modeSelector.value, user.uid);
+          if (user) rewardPlayer(modeSelector.textContent, user.uid);
         });
       }
     } else {
@@ -143,7 +147,13 @@ function getPlayerBalance() {
   });
 }
 
-startBtn.addEventListener("click", () => {
+function startGame(mode) {
+  modeSelector.textContent = mode;
+  document.getElementById("game-info").classList.remove("hidden");
+  board.classList.remove("hidden");
+  document.getElementById("attempts").textContent = "0";
+  document.getElementById("time").textContent = "0";
+
   onAuthStateChanged(auth, async (user) => {
     if (!user) return alert("Login required!");
 
@@ -158,7 +168,6 @@ startBtn.addEventListener("click", () => {
     await updateBalance(user.uid, playerPoints);
     playerPointsDisplay.textContent = playerPoints;
 
-    // Reset game state
     matchedIndices.clear();
     flipped = [];
     attempts = 0;
@@ -166,9 +175,12 @@ startBtn.addEventListener("click", () => {
     stopTimer();
 
     renderBoard();
-    if (modeSelector.value === "time") startTimer();
+    if (mode === "time") startTimer();
     else statusDisplay.textContent = "Attempts: 0";
   });
-});
+}
+
+modeAttemptsBtn.addEventListener("click", () => startGame("attempts"));
+modeTimeBtn.addEventListener("click", () => startGame("time"));
 
 getPlayerBalance();
