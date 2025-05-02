@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Memory Match Game</title>
   <link rel="stylesheet" href="css/colour.css" />
 </head>
@@ -17,9 +17,10 @@
 
     <div id="game-info" class="hidden">
       <p>Mode: <span id="gameMode"></span></p>
-      <p>Attempts: <span id="attempts">0</span></p>
-      <p>Time: <span id="time">0</span> seconds</p>
-      <p>Coins: <span id="playerPoints">Loading...</span></p>
+      <p id="attemptsSection">Attempts: <span id="attempts">0</span></p>
+      <p id="timeSection">Time: <span id="time">0</span> seconds</p>
+      <p>Coins: ₹<span id="playerPoints">Loading...</span></p>
+      <button id="quitButton">Quit</button>
     </div>
 
     <div id="board" class="board hidden"></div>
