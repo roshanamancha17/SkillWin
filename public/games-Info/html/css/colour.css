@@ -1,127 +1,42 @@
 body {
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    color: #fff;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-  }
-  
-  #gameInfo {
-    margin-bottom: 20px;
-    font-size: 1.2rem;
-  }
-  
-  input[type="number"] {
-    width: 60px;
-    padding: 5px;
-    border-radius: 5px;
-    border: none;
-  }
-  
-  /* Updated grid and tile styling */
-  #grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    max-width: 500px;
-    margin: 30px auto;
-    padding: 10px;
-  }
-  
-  .tile {
-    width: 100%;
-    padding-bottom: 100%; /* square shape */
-    position: relative;
-    cursor: pointer;
-    border-radius: 15px;
-    background-color: #ccc;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-  }
-  
-  .tile:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-  }
-  
-  .tile.revealed {
-    transform: scale(1.08);
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
-  }
-  
-  .tile-inner {
-    position: absolute;
-    inset: 0;
-    border-radius: 15px;
-    transition: background-color 0.4s ease;
-  }
-  
-  /* Matched animation */
-  .tile.matched {
-    animation: pulse 0.8s ease-in-out;
-    box-shadow: 0 0 15px 4px rgba(0, 255, 0, 0.5);
-  }
-  
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-  }
-  
-  #playerStats {
-    background: rgba(255, 255, 255, 0.1);
-    margin-top: 30px;
-    padding: 15px;
-    border-radius: 10px;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  
-  .overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 999;
-  }
-  
-  .form-container {
-    background: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    text-align: center;
-    color: #333;
-    width: 300px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.5);
-  }
-  
-  .form-container input {
-    width: 90%;
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-  }
-  
-  .form-container button {
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-weight: bold;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .form-container button:hover {
-    background: #218838;
-  }
-  
+  font-family: Arial, sans-serif;
+  background: #f9f9f9;
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+}
+
+#gameBoard {
+  display: grid;
+  grid-template-columns: repeat(4, 80px);
+  gap: 10px;
+  justify-content: center;
+  margin: 20px auto;
+}
+
+.tile {
+  width: 80px;
+  height: 80px;
+  background-color: #ddd;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tile:hover {
+  filter: brightness(90%);
+}
+
+#player-info {
+  margin: 10px 0;
+}
+
+select, button {
+  margin: 10px;
+  padding: 6px 12px;
+}
+
+#gameStatus {
+  font-weight: bold;
+  margin-top: 10px;
+}

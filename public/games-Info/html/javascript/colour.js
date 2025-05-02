@@ -1,130 +1,174 @@
-import { auth, db } from '../../main.js';
+import { auth, db } from "../../main.js";
 import {
   doc,
   getDoc,
-  setDoc,
   updateDoc
 } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
-const colorDisplay = document.getElementById("colorDisplay");
-const matchButton = document.getElementById("matchButton");
-const resultDisplay = document.getElementById("result");
-const matchedDisplay = document.getElementById("matched");
-const betInput = document.getElementById("betAmount");
+const board = document.getElementById("gameBoard");
+const modeSelector = document.getElementById("gameMode");
+const startBtn = document.getElementById("startGameBtn");
 const playerPointsDisplay = document.getElementById("playerPoints");
+const statusDisplay = document.getElementById("gameStatus");
 
-let colors = ["red", "blue", "green", "yellow"];
-let currentColor = "";
+const colors = ["red", "blue", "green", "yellow", "orange", "purple", "cyan", "lime"];
+let colorPairs = [...colors, ...colors]; // 8 pairs = 16 tiles
+
+let tiles = [];
+let flipped = [];
+let matchedIndices = new Set();
+let attempts = 0;
+let timer = null;
+let startTime = 0;
 let playerPoints = 0;
-let canClick = true;
+let shuffleCounter = 0;
 
-function updateUI() {
-  if (playerPointsDisplay) {
-    playerPointsDisplay.textContent = playerPoints;
+function shuffleArray(array) {
+  return array.sort(() => 0.5 - Math.random());
+}
+
+function startTimer() {
+  startTime = Date.now();
+  timer = setInterval(() => {
+    const time = Math.floor((Date.now() - startTime) / 1000);
+    statusDisplay.textContent = `Time: ${time}s | Attempts: ${attempts}`;
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timer);
+}
+
+function updateBalance(uid, newBalance) {
+  const docRef = doc(db, "players", uid);
+  return updateDoc(docRef, { currentBalance: newBalance });
+}
+
+function rewardPlayer(mode, uid) {
+  let payout = 0;
+
+  if (mode === "attempts") {
+    if (attempts <= 16) payout = 20;
+    else if (attempts <= 22) payout = 10;
+    else payout = 5;
+  } else if (mode === "time") {
+    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+    if (timeTaken <= 30) payout = 20;
+    else if (timeTaken <= 45) payout = 10;
+    else payout = 5;
+  }
+
+  playerPoints += payout;
+  updateBalance(uid, playerPoints);
+  alert(`Game complete! You won ₹${payout}`);
+  playerPointsDisplay.textContent = playerPoints;
+  stopTimer();
+}
+
+function renderBoard() {
+  board.innerHTML = "";
+  tiles = shuffleArray([...colorPairs]);
+
+  for (let i = 0; i < 16; i++) {
+    const tile = document.createElement("div");
+    tile.className = "tile";
+    tile.dataset.index = i;
+    tile.addEventListener("click", () => handleTileClick(i));
+    board.appendChild(tile);
   }
 }
 
-function getRandomColor() {
-  return colors[Math.floor(Math.random() * colors.length)];
-}
+function handleTileClick(index) {
+  if (matchedIndices.has(index) || flipped.includes(index)) return;
 
-function showColor() {
-  currentColor = getRandomColor();
-  colorDisplay.textContent = currentColor;
-  colorDisplay.style.backgroundColor = currentColor;
-  matchedDisplay.textContent = "";
-  resultDisplay.textContent = "";
-}
+  const tile = board.children[index];
+  tile.style.backgroundColor = tiles[index];
+  flipped.push(index);
 
-async function checkMatch(bet, uid) {
-  const randomColor = getRandomColor();
-  matchedDisplay.textContent = `Random Color: ${randomColor}`;
-  const playerDocRef = doc(db, "players", uid);
+  if (flipped.length === 2) {
+    attempts++;
+    const [first, second] = flipped;
+    if (tiles[first] === tiles[second]) {
+      matchedIndices.add(first);
+      matchedIndices.add(second);
+      flipped = [];
+      if (matchedIndices.size === 16) {
+        onAuthStateChanged(auth, (user) => {
+          if (user) rewardPlayer(modeSelector.value, user.uid);
+        });
+      }
+    } else {
+      shuffleCounter++;
+      setTimeout(() => {
+        board.children[first].style.backgroundColor = "";
+        board.children[second].style.backgroundColor = "";
+        flipped = [];
 
-  let outcome = "";
-  let winnings = 0;
-
-  if (currentColor === randomColor) {
-    winnings = bet * 2;
-    playerPoints += winnings;
-    resultDisplay.textContent = `You win ₹${winnings}!`;
-    outcome = "win";
-  } else {
-    playerPoints -= bet;
-    resultDisplay.textContent = "Try Again!";
-    outcome = "loss";
-  }
-
-  updateUI();
-
-  try {
-    const playerDoc = await getDoc(playerDocRef);
-    if (playerDoc.exists()) {
-      const data = playerDoc.data();
-      await updateDoc(playerDocRef, {
-        currentBalance: playerPoints,
-        totalBettedAmount: (data.totalBettedAmount || 0) + bet,
-        gamesPlayed: (data.gamesPlayed || 0) + 1,
-        wins: outcome === "win" ? (data.wins || 0) + 1 : data.wins,
-        losses: outcome === "loss" ? (data.losses || 0) + 1 : data.losses
-      });
+        if (shuffleCounter === 3) {
+          shuffleUnmatchedTiles();
+          shuffleCounter = 0;
+        }
+      }, 600);
     }
-  } catch (err) {
-    console.error("Error updating stats:", err);
   }
 
-  try {
-    const historyRef = doc(db, `players/${uid}/colorMatchHistory/${Date.now()}`);
-    await setDoc(historyRef, {
-      timestamp: new Date(),
-      bet,
-      outcome,
-      winnings,
-      matchedColor: randomColor,
-      selectedColor: currentColor
-    });
-  } catch (err) {
-    console.error("Error saving game history:", err);
+  statusDisplay.textContent = `Attempts: ${attempts}`;
+}
+
+function shuffleUnmatchedTiles() {
+  const unmatched = [];
+  for (let i = 0; i < 16; i++) {
+    if (!matchedIndices.has(i)) unmatched.push(tiles[i]);
+  }
+  const shuffled = shuffleArray(unmatched);
+
+  let idx = 0;
+  for (let i = 0; i < 16; i++) {
+    if (!matchedIndices.has(i)) {
+      tiles[i] = shuffled[idx++];
+    }
   }
 }
 
-function getInitialBalance() {
+function getPlayerBalance() {
   onAuthStateChanged(auth, async (user) => {
     if (user) {
-      const docRef = doc(db, "players", user.uid);
-      const docSnap = await getDoc(docRef);
-      playerPoints = docSnap.exists() ? docSnap.data().currentBalance : 1000;
-      updateUI();
+      const docSnap = await getDoc(doc(db, "players", user.uid));
+      if (docSnap.exists()) {
+        playerPoints = docSnap.data().currentBalance ?? 0;
+        playerPointsDisplay.textContent = playerPoints;
+      }
     }
   });
 }
 
-matchButton.addEventListener("click", () => {
-  if (!canClick) return;
+startBtn.addEventListener("click", () => {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return alert("Login required!");
 
-  const bet = parseInt(betInput.value);
-  if (isNaN(bet) || bet <= 0) {
-    alert("Enter a valid bet amount");
-    return;
-  }
+    const docSnap = await getDoc(doc(db, "players", user.uid));
+    if (!docSnap.exists()) return;
 
-  if (bet > playerPoints) {
-    alert("Not enough coins!");
-    return;
-  }
+    const data = docSnap.data();
+    playerPoints = data.currentBalance;
+    if (playerPoints < 5) return alert("Not enough coins to play!");
 
-  canClick = false;
-  showColor();
+    playerPoints -= 5; // Game entry fee
+    await updateBalance(user.uid, playerPoints);
+    playerPointsDisplay.textContent = playerPoints;
 
-  setTimeout(() => {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        checkMatch(bet, user.uid);
-        canClick = true;
-      }
-    });
-  }, 1000);
+    // Reset game state
+    matchedIndices.clear();
+    flipped = [];
+    attempts = 0;
+    shuffleCounter = 0;
+    stopTimer();
+
+    renderBoard();
+    if (modeSelector.value === "time") startTimer();
+    else statusDisplay.textContent = "Attempts: 0";
+  });
 });
 
-getInitialBalance();
+getPlayerBalance();
