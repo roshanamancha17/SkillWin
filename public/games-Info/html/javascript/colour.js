@@ -138,19 +138,28 @@ function handleTileClick(index) {
 }
 
 function shuffleUnmatchedTiles() {
-  const unmatched = [];
-  for (let i = 0; i < 16; i++) {
-    if (!matchedIndices.has(i)) unmatched.push(tiles[i]);
-  }
-  const shuffled = shuffleArray(unmatched);
+  const unmatchedIndices = [];
+  const unmatchedColors = [];
 
-  let idx = 0;
+  // Collect colors of unmatched tiles
   for (let i = 0; i < 16; i++) {
     if (!matchedIndices.has(i)) {
-      tiles[i] = shuffled[idx++];
+      unmatchedIndices.push(i);
+      unmatchedColors.push(tiles[i]);
     }
   }
+
+  // Shuffle colors
+  const shuffled = shuffleArray(unmatchedColors);
+
+  // Reassign shuffled colors back to tiles[] and DOM
+  unmatchedIndices.forEach((tileIndex, i) => {
+    tiles[tileIndex] = shuffled[i];
+    const tileBack = board.children[tileIndex].querySelector('.tile-back');
+    tileBack.style.backgroundColor = shuffled[i];
+  });
 }
+
 
 function getPlayerBalance() {
   onAuthStateChanged(auth, async (user) => {
