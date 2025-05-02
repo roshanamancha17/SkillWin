@@ -74,7 +74,22 @@ function renderBoard() {
 
   for (let i = 0; i < 16; i++) {
     const tile = document.createElement("div");
-    tile.className = "tile";
+      tile.className = "tile";
+
+      const inner = document.createElement("div");
+      inner.className = "tile-inner";
+
+      const front = document.createElement("div");
+      front.className = "tile-face tile-front";
+
+      const back = document.createElement("div");
+      back.className = "tile-face tile-back";
+      back.style.backgroundColor = tiles[i];
+
+      inner.appendChild(front);
+      inner.appendChild(back);
+      tile.appendChild(inner);
+
     tile.dataset.index = i;
     tile.addEventListener("click", () => handleTileClick(i));
     board.appendChild(tile);
