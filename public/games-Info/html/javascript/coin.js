@@ -27,6 +27,11 @@ auth.onAuthStateChanged(async (user) => {
       };
     } else {
       playerData = playerDoc.data();
+      // Ensure all fields are defined
+      playerData.wins = playerData.wins ?? 0;
+      playerData.losses = playerData.losses ?? 0;
+      playerData.totalBettedAmount = playerData.totalBettedAmount ?? 0;
+      playerData.gamesPlayed = playerData.gamesPlayed ?? 0;
     }
 
     const houseDoc = await db.collection('meta').doc('houseWallet').get();
@@ -42,6 +47,10 @@ auth.onAuthStateChanged(async (user) => {
 
 function updateUI(playerData) {
   document.getElementById('balance').innerText = `${(playerData.currentBalance ?? 0).toFixed(2)}`;
+  document.getElementById('wins').innerText = playerData.wins ?? 0;
+  document.getElementById('losses').innerText = playerData.losses ?? 0;
+  document.getElementById('totalBet').innerText = (playerData.totalBettedAmount ?? 0).toFixed(2);
+  document.getElementById('totalWon').innerText = ((playerData.totalBettedAmount ?? 0) - (playerData.losses ?? 0)).toFixed(2);
 }
 
 // Flip Coin Function
