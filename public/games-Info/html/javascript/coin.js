@@ -90,14 +90,16 @@ async function flipCoin() {
   playerData.totalBettedAmount = (playerData.totalBettedAmount ?? 0) + betAmount;
   playerData.gamesPlayed = (playerData.gamesPlayed ?? 0) + 1;
 
-  // Clear any previous classes
-  coinEl.classList.remove('animate-heads', 'animate-tails');
+  // Random spin multiplier for realism
+  const spins = 3 + Math.floor(Math.random() * 3); // between 3 and 5 full spins
+  const rotationX = spins * 360;
+  const rotation = result === 'heads'
+    ? `rotateY(0deg) rotateX(${rotationX}deg)`
+    : `rotateY(180deg) rotateX(${rotationX}deg)`;
 
-  // Force reflow to allow re-triggering animation
-  void coinEl.offsetWidth;
-
-  // Apply animation class
-  coinEl.classList.add(result === 'heads' ? 'animate-heads' : 'animate-tails');
+  // Trigger animation
+  coinEl.style.transition = 'transform 1s ease-in-out';
+  coinEl.style.transform = rotation;
 
   // Wait for animation to finish
   await new Promise(resolve => setTimeout(resolve, 1000));
@@ -124,7 +126,6 @@ async function flipCoin() {
     console.error('Error updating Firestore:', error);
   }
 }
-
 
 // Add event listener safely
 document.addEventListener('DOMContentLoaded', function () {
