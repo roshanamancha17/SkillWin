@@ -94,13 +94,13 @@ button:hover {
 
 /* Animation classes */
 .animate-heads {
-  transform: rotateY(0deg) rotateX(1440deg); /* 4 full flips */
-  transition: transform 2s ease-in-out;
+  transform: rotateY(0deg) rotateX(1080deg); /* 3 full flips */
+  transition: transform 1s ease-in-out;
 }
 
 .animate-tails {
-  transform: rotateY(180deg) rotateX(1440deg);
-  transition: transform 2s ease-in-out;
+  transform: rotateY(180deg) rotateX(1080deg); /* 3 full flips */
+  transition: transform 1s ease-in-out;
 }
 
 .coin div {

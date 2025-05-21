@@ -100,7 +100,7 @@ async function flipCoin() {
   coinEl.classList.add(result === 'heads' ? 'animate-heads' : 'animate-tails');
 
   // Wait for animation to finish
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
   // Show result after animation
   try {
