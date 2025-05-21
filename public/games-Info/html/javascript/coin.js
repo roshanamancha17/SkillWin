@@ -58,28 +58,14 @@ async function flipCoin() {
   const betAmount = parseFloat(document.getElementById('betAmount').value);
   const userChoice = document.getElementById('betChoice').value.toLowerCase();
   const resultDiv = document.getElementById('result');
+  const coinEl = document.getElementById('coin');
 
-  if (playerData.currentBalance <= 0) {
-    alert('Your balance is ₹0. Please add funds or win to continue playing.');
+  if (playerData.currentBalance <= 0 || isNaN(betAmount) || betAmount <= 0 || betAmount > playerData.currentBalance || betAmount > houseBalance) {
+    alert('Invalid bet. Please check your input and try again.');
     return;
   }
 
-  if (isNaN(betAmount) || betAmount <= 0) {
-    alert('Please enter a valid bet amount.');
-    return;
-  }
-
-  if (betAmount > playerData.currentBalance) {
-    alert('You cannot bet more than your current balance.');
-    return;
-  }
-
-  if (betAmount > houseBalance) {
-    alert('House does not have enough funds to match your bet. Try a lower amount.');
-    return;
-  }
-
-  // Deduct from both player and house
+  // Deduct from both
   playerData.currentBalance -= betAmount;
   houseBalance -= betAmount;
 
@@ -88,8 +74,8 @@ async function flipCoin() {
   const pot = betAmount * 2;
   const winnings = pot - houseCut;
 
-  let message = '';
   let playerWon = userChoice === result;
+  let message = '';
 
   if (playerWon) {
     playerData.currentBalance += winnings;
@@ -104,8 +90,20 @@ async function flipCoin() {
   playerData.totalBettedAmount = (playerData.totalBettedAmount ?? 0) + betAmount;
   playerData.gamesPlayed = (playerData.gamesPlayed ?? 0) + 1;
 
+  // Clear any previous classes
+  coinEl.classList.remove('animate-heads', 'animate-tails');
+
+  // Force reflow to allow re-triggering animation
+  void coinEl.offsetWidth;
+
+  // Apply animation class
+  coinEl.classList.add(result === 'heads' ? 'animate-heads' : 'animate-tails');
+
+  // Wait for animation to finish
+  await new Promise(resolve => setTimeout(resolve, 2000));
+
+  // Show result after animation
   try {
-    // Update Player Data
     await db.collection('players').doc(playerData.userId).update({
       currentBalance: playerData.currentBalance,
       wins: playerData.wins,
@@ -114,10 +112,8 @@ async function flipCoin() {
       gamesPlayed: playerData.gamesPlayed
     });
 
-    // Update House Balance
     await db.collection('meta').doc('houseWallet').set({ balance: houseBalance });
 
-    // Increment House Cut
     await db.collection('meta').doc('houseCut').set({
       totalAmount: firebase.firestore.FieldValue.increment(houseCut)
     }, { merge: true });
@@ -128,6 +124,7 @@ async function flipCoin() {
     console.error('Error updating Firestore:', error);
   }
 }
+
 
 // Add event listener safely
 document.addEventListener('DOMContentLoaded', function () {

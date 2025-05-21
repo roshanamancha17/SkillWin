@@ -1,71 +1,71 @@
 body {
-    background: radial-gradient(circle at top, #222, #000);
-    font-family: 'Segoe UI', sans-serif;
-    color: #fff;
-    text-align: center;
-    padding: 30px;
-  }
-  
-  .container {
-    max-width: 500px;
-    margin: auto;
-  }
-  
-  h1 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-  }
-  
-  .balance {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-  }
-  
-  .bet-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 30px;
-  }
-  
-  input, select, button {
-    padding: 10px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 8px;
-    outline: none;
-  }
-  
-  button {
-    background: #00ff99;
-    color: #000;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  
-  button:hover {
-    background: #00cc77;
-  }
-  
-  .coin-container {
-    perspective: 1000px;
-    height: 150px;
-    margin-bottom: 20px;
-  }
-  
-  .coin {
-    width: 120px;
-    height: 120px;
-    position: relative;
-    margin: 30px auto;
-    transform-style: preserve-3d;
-    transform: rotateY(0deg);
-    transition: transform 1s ease-out;
-    animation: none;
-    perspective: 1000px;
-  }
-  
-  .coin::before,
+  background: radial-gradient(circle at top, #222, #000);
+  font-family: 'Segoe UI', sans-serif;
+  color: #fff;
+  text-align: center;
+  padding: 30px;
+}
+
+.container {
+  max-width: 500px;
+  margin: auto;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.balance {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+}
+
+.bet-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+input, select, button {
+  padding: 10px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+button {
+  background: #00ff99;
+  color: #000;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #00cc77;
+}
+
+.coin-container {
+  perspective: 1000px;
+  height: 150px;
+  margin-bottom: 20px;
+}
+
+.coin {
+  width: 120px;
+  height: 120px;
+  position: relative;
+  margin: 30px auto;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+  transition: transform 1s ease-out;
+  animation: none;
+  perspective: 1000px;
+}
+
+.coin::before,
 .coin::after {
   content: "";
   position: absolute;
@@ -92,56 +92,64 @@ body {
   transform: rotateY(180deg);
 }
 
+/* Animation classes */
+.animate-heads {
+  transform: rotateY(0deg) rotateX(1440deg); /* 4 full flips */
+  transition: transform 2s ease-in-out;
+}
 
-  
-  .coin div {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    font-size: 4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    backface-visibility: hidden;
-  }
-  
-  .heads {
-    background: gold;
-  }
-  
-  .tails {
-    background: crimson;
-    transform: rotateY(180deg);
-  }
-  
-  .result {
-    font-size: 1.3rem;
-    margin-top: 20px;
-  }
+.animate-tails {
+  transform: rotateY(180deg) rotateX(1440deg);
+  transition: transform 2s ease-in-out;
+}
 
-  .modal {
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.85);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-  }
-  
-  .modal-content {
-    background: #222;
-    padding: 30px;
-    border-radius: 10px;
-    text-align: center;
-    color: white;
-  }
-  
-  .player-stats {
-    background: #111;
-    padding: 15px;
-    border-radius: 10px;
-    margin-top: 20px;
-  }
-  
+.coin div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  font-size: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backface-visibility: hidden;
+}
+
+.heads {
+  background: gold;
+}
+
+.tails {
+  background: crimson;
+  transform: rotateY(180deg);
+}
+
+.result {
+  font-size: 1.3rem;
+  margin-top: 20px;
+}
+
+.modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background: #222;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  color: white;
+}
+
+.player-stats {
+  background: #111;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 20px;
+}
