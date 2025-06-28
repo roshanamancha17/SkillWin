@@ -18,7 +18,7 @@
 
 ## ⚙️ Tech Stack
 
-- **Frontend:** React.js + Vite + Tailwind CSS
+- **Frontend:** Html + CSS + JS + Vite
 - **Hosting:** Vercel
 - **Backend Services:** Firebase (Authentication, Firestore, Cloud Functions)
 
